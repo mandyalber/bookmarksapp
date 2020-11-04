@@ -6,6 +6,7 @@ import BookmarksContext from './BookmarksContext';
 import Nav from './Nav/Nav';
 import config from './config';
 import './App.css';
+import UpdateBookmark from './UpdateBookmark/UpdateBookmark';
 
 class App extends Component {
   state = {
@@ -56,10 +57,19 @@ class App extends Component {
       })
   }
 
+  updateBookmark = updatedBookmark => {
+    this.setState({
+      bookmarks: this.state.bookmarks.map(bm =>
+        (bm.id !== updatedBookmark.id) ? bm : updatedBookmark
+      )
+    })
+  }
+
   render() {
     const contextValue = {
       bookmarks: this.state.bookmarks,
       addBookmark: this.addBookmark,
+      updateBookmark: this.updateBookmark,
       deleteBookmark: this.deleteBookmark,
     }
     return (
@@ -68,15 +78,9 @@ class App extends Component {
         <BookmarksContext.Provider value={contextValue}>
           <Nav />
           <div className='content' aria-live='polite'>
-            <Route
-              path='/add-bookmark'
-              component={AddBookmark}
-            />
-            <Route
-              exact
-              path='/'
-              component={BookmarkList}
-            />
+            <Route path='/add-bookmark' component={AddBookmark}/>
+            <Route exact path='/' component={BookmarkList}/>
+            <Route path='/update/:bookmarkId' component={UpdateBookmark}/>
           </div>
         </BookmarksContext.Provider>
       </main>
@@ -85,3 +89,17 @@ class App extends Component {
 }
 
 export default App;
+
+/*  Create a new Route that will contain a form for editing bookmarks
+    Create a component that contains a form for updating bookmarks
+    
+    On your list of bookmarks, add a button/link on each bookmark that links to the edit route for that bookmark
+        You can either: use a Link from react-router-dom
+        or use a button that calls history.push when it's clicked
+    
+    The edit bookmark form should display fields that are pre-populated with the existing bookmark's field values
+    
+    The edit bookmark form should submit a PATCH request to your bookmarks-server with the new bookmark field values
+    
+    If the PATCH request is successful, update the bookmark stored in context with the new values and redirect the user back to the list of bookmarks
+*/
